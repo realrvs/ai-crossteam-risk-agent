@@ -1,5 +1,8 @@
 # Cross-Team Implicit Dependency Risk Agent
 
+[![CI](https://github.com/realrvs/ai-crossteam-risk-agent/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/realrvs/ai-crossteam-risk-agent/actions/workflows/ci-cd.yml)
+[![codecov](https://codecov.io/gh/realrvs/ai-crossteam-risk-agent/branch/main/graph/badge.svg)](https://codecov.io/gh/realrvs/ai-crossteam-risk-agent)
+
 Агент выявления неявных межкомандных блокировок по изменениям контрактов/артефактов в Git и окну тишины в зависимых репозиториях с MCP-интерфейсом, риск-скорингом и наблюдаемостью по принципу Observability by Design.
 
 ## Зачем это нужно

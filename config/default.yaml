@@ -1,0 +1,38 @@
+# Default configuration for dep_agent
+# Override with environment variables or create environment-specific configs
+
+git:
+  github_token: ""
+  gitlab_token: ""
+  base_url: "https://api.github.com"
+  gitlab_base_url: "https://gitlab.com/api/v4"
+  org: ""
+  timeout: 30
+  max_retries: 3
+
+llm:
+  provider: "yandexgpt"
+  model: "yandexgptlatest"
+  oauth_token: ""
+  folder_id: ""
+  base_url: "https://llm.api.cloud.yandex.net"
+  max_llm_candidates: 20
+  timeout: 60
+
+otel:
+  service_name: "dep-agent"
+  exporter: "console"  # "console", "otlp-grpc", "otlp-http"
+  otlp_endpoint: "localhost:4317"
+  sampling_rate: 1.0
+
+prometheus:
+  port: 9090
+  path: "/metrics"
+
+graph_store:
+  # SQLite for MVP, PostgreSQL for production
+  url: "sqlite:///dep_agent.db"
+
+security:
+  secret_redaction_enabled: true
+  strict_mode: true
