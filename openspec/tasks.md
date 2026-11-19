@@ -1,0 +1,55 @@
+## Phase 1: Telemetry, Security & Core Foundation
+- [ ] T-001: Initialize Python service skeleton, config loader, and read-only Git API client wrapper (`src/dep_agent/ingestion/git_client.py`)
+  - **FR/NFR**: FR-001, NFR-SEC-003
+  - **TM Ref**: TM-03
+  - **Estimate**: 2 SP
+  - **Dependencies**: 
+- [ ] T-002: Implement `SecretRedactor` with token masking and audit log emission `security.secret.redacted` (`src/dep_agent/security/redactor.py`)
+  - **FR/NFR**: NFR-SEC-002, NFR-OBS-001
+  - **TM Ref**: TM-02
+  - **Estimate**: 2 SP
+  - **Dependencies**: T-001
+- [ ] T-003: Configure OpenTelemetry SDK, W3C `traceparent` and `X-Request-ID` propagation, Prometheus metrics (`dep_agent.request.duration`, `dep_agent.commits.filtered_total`, `dep_agent.llm.validation.duration`), and `dep_agent.run.span` (`src/dep_agent/telemetry/otel_setup.py`)
+  - **FR/NFR**: NFR-001, NFR-OBS-001
+  - **TM Ref**: TM-02
+  - **Estimate**: 2 SP
+  - **Dependencies**: T-002
+
+## Phase 2: Ingestion, Pre-Filtering & Artifact Graph
+- [ ] T-004: Implement commit, diff/file change, and PR/MR status ingestion and normalization (`src/dep_agent/ingestion/service.py`)
+  - **FR/NFR**: FR-001, NFR-001
+  - **TM Ref**: 
+  - **Estimate**: 3 SP
+  - **Dependencies**: T-001, T-002, T-003
+- [ ] T-005: Implement deterministic noise pre-filter (`merge`, `chore`, `docs`, `lint`, `typo`, non-contract paths) and `dep_agent.commits.filtered_total` counter (`src/dep_agent/filtering/pre_filter.py`)
+  - **FR/NFR**: FR-002, NFR-SEC-004, NFR-OBS-001
+  - **TM Ref**: TM-04
+  - **Estimate**: 2 SP
+  - **Dependencies**: T-003, T-004
+- [ ] T-006: Build cross-repository artifact dependency graph and team mapping (`CODEOWNERS`/registry) (`src/dep_agent/graph/artifact_graph.py`)
+  - **FR/NFR**: FR-003
+  - **TM Ref**: 
+  - **Estimate**: 3 SP
+  - **Dependencies**: T-004, T-005
+- [ ] T-007: Implement silence-window `N`-day blocker candidate detector and `dep_agent.blocker.detected` structured log (`src/dep_agent/detector/silence_detector.py`)
+  - **FR/NFR**: FR-004, NFR-OBS-001
+  - **TM Ref**: 
+  - **Estimate**: 2 SP
+  - **Dependencies**: T-006
+
+## Phase 3: LLM Risk Validator, MCP Interface & Ops Readiness
+- [ ] T-008: Implement `LlmValidator` with untrusted-data isolation, candidate cap (`max_llm_candidates`), rate-limit backoff, strict output schema check, and `dep_agent.llm.validation.duration` metric (`src/dep_agent/validation/llm_validator.py`)
+  - **FR/NFR**: FR-005, NFR-SEC-001, NFR-SEC-004, NFR-OBS-001
+  - **TM Ref**: TM-01, TM-04
+  - **Estimate**: 3 SP
+  - **Dependencies**: T-002, T-003, T-007
+- [ ] T-009: Implement `DEPENDENCY_MAP` storage and MCP/HTTP handlers (`list_dependencies`, `get_blockers`, `run_dependency_analysis`) with input validation and `trace_id` correlation (`src/dep_agent/mcp_server/server.py`)
+  - **FR/NFR**: FR-006, NFR-001, NFR-SEC-003, NFR-OBS-001
+  - **TM Ref**: TM-03
+  - **Estimate**: 3 SP
+  - **Dependencies**: T-006, T-007, T-008
+- [ ] T-010: Add Grafana dashboard definition, Prometheus SLO/rate alert rules, and Loki/OTel verification suite (`deploy/observability/`)
+  - **FR/NFR**: NFR-001, NFR-OBS-001
+  - **TM Ref**: 
+  - **Estimate**: 2 SP
+  - **Dependencies**: T-003, T-009

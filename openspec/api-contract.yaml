@@ -1,0 +1,337 @@
+openapi: "3.1.0"
+info:
+  title: Cross-Team Implicit Dependency Risk Agent API
+  version: "1.0.0"
+  description: REST/MCP query interface for cross-repository artifact dependencies, implicit blocker candidates, and risk scores.
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    DependencyItem:
+      type: object
+      required:
+        - source_repo
+        - source_artifact
+        - source_team
+        - target_repo
+        - target_team
+      properties:
+        source_repo:
+          type: string
+        source_artifact:
+          type: string
+        source_team:
+          type: string
+        target_repo:
+          type: string
+        target_team:
+          type: string
+        dependency_type:
+          type: string
+    DependencyListResponse:
+      type: object
+      required:
+        - items
+        - trace_id
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DependencyItem"
+        trace_id:
+          type: string
+    BlockerCandidate:
+      type: object
+      required:
+        - candidate_id
+        - source_repo
+        - target_repo
+        - silence_days
+        - risk_score
+        - risk_level
+      properties:
+        candidate_id:
+          type: string
+        source_repo:
+          type: string
+        target_repo:
+          type: string
+        artifact:
+          type: string
+        silence_days:
+          type: integer
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 25
+        risk_level:
+          type: string
+          enum: [low, medium, high, critical]
+        evidence_ref:
+          type: string
+    BlockerQueryResponse:
+      type: object
+      required:
+        - blockers
+        - trace_id
+      properties:
+        blockers:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlockerCandidate"
+        trace_id:
+          type: string
+    AnalysisRunRequest:
+      type: object
+      required:
+        - repositories
+      properties:
+        repositories:
+          type: array
+          items:
+            type: string
+        lookback_days:
+          type: integer
+          default: 14
+        silence_window_days:
+          type: integer
+          default: 7
+        max_llm_candidates:
+          type: integer
+          default: 20
+    AnalysisRunResponse:
+      type: object
+      required:
+        - run_id
+        - status
+        - evaluated_candidates
+        - blockers_found
+        - trace_id
+      properties:
+        run_id:
+          type: string
+        status:
+          type: string
+          enum: [completed, partial]
+        evaluated_candidates:
+          type: integer
+        blockers_found:
+          type: integer
+        trace_id:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+        - error_code
+        - message
+        - trace_id
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+        trace_id:
+          type: string
+          description: W3C trace-id для корреляции с трейсом
+paths:
+  /v1/dependencies:
+    get:
+      summary: List cross-repository artifact dependencies and owning teams
+      operationId: list_dependencies
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: traceparent
+          in: header
+          required: false
+          schema:
+            type: string
+          description: W3C Trace Context (обязателен для сквозной диагностики)
+        - name: X-Request-ID
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: team
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: repo
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DependencyListResponse"
+              examples:
+                default:
+                  value:
+                    items:
+                      - source_repo: billing-service
+                        source_artifact: openapi/billing.yaml
+                        source_team: team-billing
+                        target_repo: mobile-app
+                        target_team: team-mobile
+                        dependency_type: openapi_contract
+                    trace_id: 4bf92f3577b34da6a3ce929d0e0e4736
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+  /v1/blockers:
+    get:
+      summary: Query candidate implicit cross-team blockers and risk scores
+      operationId: get_blockers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: traceparent
+          in: header
+          required: false
+          schema:
+            type: string
+          description: W3C Trace Context (обязателен для сквозной диагностики)
+        - name: X-Request-ID
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: team
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: min_risk_score
+          in: query
+          required: false
+          schema:
+            type: number
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlockerQueryResponse"
+              examples:
+                default:
+                  value:
+                    blockers:
+                      - candidate_id: blk-001
+                        source_repo: billing-service
+                        target_repo: mobile-app
+                        artifact: openapi/billing.yaml
+                        silence_days: 9
+                        risk_score: 16
+                        risk_level: high
+                        evidence_ref: commit:9f8e7d6
+                    trace_id: 4bf92f3577b34da6a3ce929d0e0e4736
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "422":
+          description: Validation Error
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error
+  /v1/analysis/runs:
+    post:
+      summary: Trigger ingestion, pre-filtering, silence-window evaluation, and LLM risk scoring
+      operationId: run_dependency_analysis
+      security:
+        - bearerAuth: []
+      description: >
+        Applies deterministic pre-filtering before LLM calls (TM-04, NFR-SEC-004), treats
+        untrusted repository text as isolated data rather than instructions (TM-01, NFR-SEC-001),
+        and redacts secrets prior to logging/LLM calls (TM-02, NFR-SEC-002).
+      parameters:
+        - name: traceparent
+          in: header
+          required: false
+          schema:
+            type: string
+          description: W3C Trace Context (обязателен для сквозной диагностики)
+        - name: X-Request-ID
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalysisRunRequest"
+            examples:
+              default:
+                value:
+                  repositories:
+                    - org/billing-service
+                    - org/mobile-app
+                  lookback_days: 14
+                  silence_window_days: 7
+                  max_llm_candidates: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisRunResponse"
+              examples:
+                default:
+                  value:
+                    run_id: run-20261119-01
+                    status: completed
+                    evaluated_candidates: 3
+                    blockers_found: 1
+                    trace_id: 4bf92f3577b34da6a3ce929d0e0e4736
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "422":
+          description: Validation Error
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error
