@@ -14,3 +14,13 @@
 | NFR-SEC-003 | NFR-SEC | spec.md#nfr-sec-001 | threat-model.md#5 (TM-03) | — | `GET /v1/dependencies`, `GET /v1/blockers`, `POST /v1/analysis/runs` | T-001, T-009 | TC-SEC-003 | Security test (read-only scope + MCP validation) |
 | NFR-SEC-004 | NFR-SEC | spec.md#nfr-sec-001 | threat-model.md#5 (TM-04) | ADR-001 | `POST /v1/analysis/runs` | T-005, T-008 | TC-SEC-004 | Security test (candidate cap + rate-limit handling) |
 | NFR-OBS-001 | NFR-OBS | spec.md#nfr-obs-001 | threat-model.md#5 (TM-02) | ADR-001, ADR-002 | `GET /v1/dependencies`, `GET /v1/blockers`, `POST /v1/analysis/runs` | T-002, T-003, T-005, T-007, T-008, T-009, T-010 | TC-OBS-001 | Observability test + OTel signals + `trace_id` + `apply.md` verification |
+
+## Decision Traceability
+
+| ID | Решение | Spec § | Task Refs | Status |
+|----|---------|--------|-----------|--------|
+| DEC-001 | Per-type silence windows: API=7d, packages=3d | design.md#детерминированные-правила-v1 | T-007 | Closed |
+| DEC-002 | Team mapping: CODEOWNERS + YAML fallback | design.md#детерминированные-правила-v1 | T-006 | Closed |
+| DEC-003 | Artifact types v1: OpenAPI, Protobuf, package manifests | design.md#детерминированные-правила-v1 | T-005 | Closed |
+| DEC-004 | Graph store: SQLite MVP → PostgreSQL migration | design.md#технологический-стек | T-001, T-006 | Closed |
+| DEC-005 | LLM provider: YandexGPT (YandexAI/YandexCloud) | design.md#технологический-стек | T-008 | Closed |

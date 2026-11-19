@@ -16,10 +16,14 @@
 - **Ключевые сигналы:** `dep_agent.request.duration`, `dep_agent.commits.filtered_total`, `dep_agent.llm.validation.duration`, `dep_agent.run.span`, `dep_agent.blocker.detected`, `security.secret.redacted`
 - **Redaction policy:** маскирование токенов/секретов в логах, диффах и промптах перед отправкой в LLM/Loki с записью `security.secret.redacted` и изоляцией untrusted-текстов репозиториев
 - **Корреляция:** W3C `traceparent` и `X-Request-ID` с пробросом `trace_id` в спаны, метрики и логи
-## Открытые вопросы
-- [ ] Уточнить целевой размер окна тишины N (в днях) и правила маппинга репозиториев/файлов на команды (`CODEOWNERS` vs внешний реестр)
-- [ ] Подтвердить список поддерживаемых типов артефактов для первого релиза (OpenAPI/Protobuf, манифесты пакетов, миграции БД)
-- [ ] Определить целевое хранилище графа и состояния (`SQLite`/`PostgreSQL`) для детектора окна тишины `N`
+## Решения по ранее открытым вопросам
+- **[DEC-001] Окно тишины N:** API-контракты (OpenAPI/Protobuf) — `7 дней`, манифесты пакетов (`package.json`, `go.mod`, `requirements.txt`) — `3 дня`, миграции БД — `5 дней` (планируется в v1.1). Значения конфигурируются через `silence_window_days` в `AnalysisRunRequest`.
+- **[DEC-002] Маппинг на команды:** приоритетный источник — `CODEOWNERS` из корня репозитория; fallback — внешний YAML-реестр `team-mapping.yaml` (формат: `repo → team`). Используется в T-006 (`artifact_graph.py`).
+- **[DEC-003] Типы артефактов для v1:** OpenAPI (YAML/JSON, пути `openapi/**`, `api/**`), Protobuf (`*.proto`), манифесты пакетов (`package.json`, `go.mod`, `requirements.txt`, `Cargo.toml`). Миграции БД — в roadmap v1.1.
+- **[DEC-004] Хранилище графа:** `SQLite` для MVP (single-node, no infra overhead); миграция на `PostgreSQL` при масштабе > 100 репозиториев или multi-instance deployment. ORM: `SQLAlchemy 2.0`.
+
+## Решено
+- **[DEC-005] LLM-провайдер:** `YandexGPT` (через YandexAI API или YandexCloud). Fallback — внутренний аналог через тот же интерфейс. Влияет на T-008 (`llm_validator.py`).
 ## Пропущенные артефакты
 - <нет>
 ## **Traceability Matrix (INCREMENTAL)**

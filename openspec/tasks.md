@@ -1,9 +1,10 @@
 ## Phase 1: Telemetry, Security & Core Foundation
-- [ ] T-001: Initialize Python service skeleton, config loader, and read-only Git API client wrapper (`src/dep_agent/ingestion/git_client.py`)
+- [ ] T-001: Initialize Python service skeleton, config loader, SQLite graph store (SQLAlchemy 2.0), and read-only Git API client wrapper (`src/dep_agent/ingestion/git_client.py`)
   - **FR/NFR**: FR-001, NFR-SEC-003
   - **TM Ref**: TM-03
-  - **Estimate**: 2 SP
+  - **Estimate**: 3 SP
   - **Dependencies**: 
+  - **DEC Ref**: DEC-004 (SQLite MVP)
 - [ ] T-002: Implement `SecretRedactor` with token masking and audit log emission `security.secret.redacted` (`src/dep_agent/security/redactor.py`)
   - **FR/NFR**: NFR-SEC-002, NFR-OBS-001
   - **TM Ref**: TM-02
@@ -21,21 +22,24 @@
   - **TM Ref**: 
   - **Estimate**: 3 SP
   - **Dependencies**: T-001, T-002, T-003
-- [ ] T-005: Implement deterministic noise pre-filter (`merge`, `chore`, `docs`, `lint`, `typo`, non-contract paths) and `dep_agent.commits.filtered_total` counter (`src/dep_agent/filtering/pre_filter.py`)
+- [ ] T-005: Implement deterministic noise pre-filter (`merge`, `chore`, `docs`, `lint`, `typo`, non-contract paths per DEC-003) and `dep_agent.commits.filtered_total` counter (`src/dep_agent/filtering/pre_filter.py`)
   - **FR/NFR**: FR-002, NFR-SEC-004, NFR-OBS-001
   - **TM Ref**: TM-04
   - **Estimate**: 2 SP
   - **Dependencies**: T-003, T-004
-- [ ] T-006: Build cross-repository artifact dependency graph and team mapping (`CODEOWNERS`/registry) (`src/dep_agent/graph/artifact_graph.py`)
+  - **DEC Ref**: DEC-003 (artifact types)
+- [ ] T-006: Build cross-repository artifact dependency graph and team mapping via CODEOWNERS + fallback registry (`src/dep_agent/graph/artifact_graph.py`)
   - **FR/NFR**: FR-003
   - **TM Ref**: 
   - **Estimate**: 3 SP
   - **Dependencies**: T-004, T-005
-- [ ] T-007: Implement silence-window `N`-day blocker candidate detector and `dep_agent.blocker.detected` structured log (`src/dep_agent/detector/silence_detector.py`)
+  - **DEC Ref**: DEC-002 (CODEOWNERS + YAML fallback), DEC-004 (SQLite/SQLAlchemy)
+- [ ] T-007: Implement silence-window `N`-day blocker candidate detector with per-artifact-type windows (DEC-001) and `dep_agent.blocker.detected` structured log (`src/dep_agent/detector/silence_detector.py`)
   - **FR/NFR**: FR-004, NFR-OBS-001
   - **TM Ref**: 
-  - **Estimate**: 2 SP
+  - **Estimate**: 3 SP
   - **Dependencies**: T-006
+  - **DEC Ref**: DEC-001 (per-type silence windows)
 
 ## Phase 3: LLM Risk Validator, MCP Interface & Ops Readiness
 - [ ] T-008: Implement `LlmValidator` with untrusted-data isolation, candidate cap (`max_llm_candidates`), rate-limit backoff, strict output schema check, and `dep_agent.llm.validation.duration` metric (`src/dep_agent/validation/llm_validator.py`)

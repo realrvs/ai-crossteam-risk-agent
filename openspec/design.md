@@ -81,9 +81,40 @@ flowchart TD
 |---|---|---|
 | Язык и рантайм | Python 3.12+ | Единый стек для ingestion, графа, MCP-сервера и OTel SDK |
 | Интеграция с Git | GitHub/GitLab REST/GraphQL клиенты | Прямой доступ к коммитам, диффам, файлам и статусам PR/issue |
-| Граф и состояние | Графовая/реляционная модель в памяти/SQLite/PostgreSQL | Быстрый обход связей «артефакт ↔ репозиторий ↔ команда» и хранение окна `N` |
+| Граф и состояние | SQLite (MVP) → PostgreSQL (>100 repos) | SQLAlchemy 2.0 ORM; SQLite без инфраструктуры для старта, миграция на PG при масштабе |
+| ORM | SQLAlchemy 2.0 | Типизированные модели, alembic-миграции, единый интерфейс для SQLite/PostgreSQL |
 | Протокол агентов | Model Context Protocol (MCP) | Стандартный интерфейс для вызовов инструментов агентами и оркестраторами |
 | Наблюдаемость | OpenTelemetry SDK + Prometheus + Loki + Grafana | Прямое соответствие заданному observability-стеку и SLO |
+| LLM-провайдер (v1) | YandexGPT (GPT-4o через YandexAI API или `yandexgptlatest` через YandexCloud) | Поддержка JSON-схемы response, fallback на внутренний аналог через тот же интерфейс |
+
+### LLM-провайдер: YandexGPT (DEC-005)
+
+- **API:** YandexCloud AI (`llm.generate` через gRPC/HTTP) или YandexAI (`yandexgptlatest`)
+- **Аутентификация:** OAuth-токен (YandexOAuthToken) или IAM-токен
+- **JSON-схема:** YandexGPT поддерживает `response_schema` (JSON Schema) — используется для валидации ответа в T-008
+- **Fallback:** внутренний LLM-сервис через совместимый интерфейс
+- **Конфигурация:** `config/llm.yaml` — `provider: yandexgpt`, `model: yandexgptlatest`, `folder_id`, `oauth_token`
+
+### Детерминированные правила v1
+
+**Артефакты (DEC-003):**
+- OpenAPI: `openapi/**`, `api/**`, `*.openapi.yaml`, `*.openapi.json`
+- Protobuf: `**/*.proto`
+- Манифесты пакетов: `package.json`, `go.mod`, `requirements.txt`, `Cargo.toml`
+- Миграции БД: исключены из v1 (roadmap v1.1)
+
+**Окно тишины (DEC-001):**
+| Тип артефакта | N (дни) | Обоснование |
+|---|---|---|
+| API-контракты (OpenAPI/Protobuf) | 7 | Критичные разрывы, ждут быстрее |
+| Манифесты пакетов | 3 | Менее срочные, часто совместимые |
+
+Значения переопределяются через `silence_window_days` в `AnalysisRunRequest`.
+
+**Маппинг на команды (DEC-002):**
+1. Parse `CODEOWNERS` из корня репозитория → `{ path_pattern → team }`
+2. Fallback: `team-mapping.yaml` в `config/` → `{ repo → team }`
+3. Если ни один источник не определён → команда `unknown`
 
 ### **Точки инструментирования**
 | Сигнал | Где создаётся (файл/класс) | Тип | Auto/Manual | Атрибуты |
@@ -114,5 +145,4 @@ flowchart TD
 5. Проверить дашборды Grafana, алерты Prometheus, логи в Loki и провести canary-запуск на пилотном наборе репозиториев.
 
 ## Open Questions
-- [ ] Какое значение окна тишины `N` дней использовать по умолчанию для разных типов контрактов (например, API vs миграции БД)?
-- [ ] В каком хранилище будет персистироваться граф артефактов и история кандидатов в production (локальный SQLite/JSON для MVP или PostgreSQL)?
+- <нет>
