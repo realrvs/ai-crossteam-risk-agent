@@ -25,6 +25,7 @@ from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.sampling import ALWAYS_ON
 from opentelemetry.semconv.attributes.service_attributes import SERVICE_NAME
 from opentelemetry.trace import Span, Status, StatusCode, Tracer, set_span_in_context
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
@@ -54,7 +55,13 @@ def setup_otel(
     resource = Resource.create({SERVICE_NAME: service_name})
 
     # Tracer provider
-    provider = TracerProvider(resource=resource, sampler=sampling_rate)
+    if sampling_rate >= 1.0:
+        sampler = ALWAYS_ON
+    else:
+        from opentelemetry.sdk.trace.sampling import ParentBasedAlwaysSample
+        sampler = ParentBasedAlwaysSample()
+
+    provider = TracerProvider(resource=resource, sampler=sampler)
 
     if exporter == "console":
         processor = BatchSpanProcessor(ConsoleSpanExporter())
