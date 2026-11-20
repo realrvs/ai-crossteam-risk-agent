@@ -83,7 +83,7 @@ def setup_otel(
         metric_reader = None  # No periodic export for console
     else:
         if exporter == "otlp-grpc":
-            metric_exporter = OTLPMetricExporter(endpoint=otlp_endpoint, secure=True)
+            metric_exporter = OTLPMetricExporter(endpoint=otlp_endpoint, insecure=True)
         else:
             metric_exporter = OTLPMetricExporter(endpoint=f"{otlp_endpoint}/v1/metrics")
         metric_reader = PeriodicExportingMetricReader(metric_exporter, export_interval_millis=30000)

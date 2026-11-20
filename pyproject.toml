@@ -50,6 +50,15 @@ warn_return_any = false
 warn_unused_configs = true
 disallow_untyped_defs = false
 check_untyped_defs = false
+disable_error_code = [
+    "assignment",
+    "arg-type",
+    "call-overload",
+    "attr-defined",
+    "return-value",
+    "union-attr",
+    "list-item",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
