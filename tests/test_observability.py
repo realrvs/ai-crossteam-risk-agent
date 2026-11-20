@@ -3,13 +3,13 @@
 import json
 import os
 
-from dep_agent.observability.grafana_dashboard import (
-    get_dashboard_json,
-    save_dashboard,
-)
 from dep_agent.observability.alert_rules import (
     get_alert_rules,
     save_alert_rules,
+)
+from dep_agent.observability.grafana_dashboard import (
+    get_dashboard_json,
+    save_dashboard,
 )
 from dep_agent.observability.loki_queries import (
     get_loki_queries,
@@ -43,7 +43,7 @@ def test_save_dashboard(tmp_path: str) -> None:
     path = str(tmp_path / "test-dashboard.json")
     save_dashboard(path)
     assert os.path.exists(path)
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     assert "panels" in data
 
@@ -104,6 +104,6 @@ def test_save_loki_queries(tmp_path: str) -> None:
     path = str(tmp_path / "test-loki-queries.json")
     save_loki_queries(path)
     assert os.path.exists(path)
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     assert "blocker_detected" in data

@@ -2,8 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
-from dep_agent.config import Config
-from dep_agent.ingestion.service import IngestionService, IngestedCommit
+from dep_agent.ingestion.service import IngestedCommit, IngestionService
 
 
 def test_ingestion_service_init() -> None:

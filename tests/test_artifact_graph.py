@@ -1,13 +1,8 @@
 """Tests for ArtifactGraph and TeamMapper (TC-003)."""
 
-from pathlib import Path
-from unittest.mock import MagicMock, patch
 
-from sqlalchemy import create_engine
 
-from dep_agent.config import Config
 from dep_agent.graph.artifact_graph import ArtifactGraph, TeamMapper
-from dep_agent.graph.models import Base
 
 
 def test_artifact_graph_init() -> None:

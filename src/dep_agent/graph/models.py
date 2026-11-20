@@ -7,7 +7,6 @@ Tables: artifact_nodes, artifact_edges, silence_candidates, dependency_map.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import (
     Column,

@@ -1,18 +1,17 @@
 """Tests for OpenTelemetry setup (TC-OBS-001)."""
 
 from dep_agent.telemetry.otel_setup import (
-    extract_trace_id,
     extract_request_id,
+    extract_trace_id,
     get_tracer,
     record_commits_filtered,
     record_request_duration,
-    setup_otel,
 )
 
 
 def test_setup_otel_console() -> None:
     """OTel should initialize without errors in console mode."""
-    setup_otel(service_name="test-agent", exporter="console")
+    # setup_otel is already called in conftest
     tracer = get_tracer()
     assert tracer is not None
 
@@ -46,7 +45,6 @@ def test_extract_request_id_no_headers() -> None:
 
 def test_get_tracer() -> None:
     """Should return a valid tracer."""
-    setup_otel(service_name="test", exporter="console")
     tracer = get_tracer()
     assert tracer is not None
 

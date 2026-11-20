@@ -14,15 +14,15 @@ TM Ref: TM-01 (untrusted data), TM-04 (rate limiting).
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
 )
 
 from dep_agent.config import Config

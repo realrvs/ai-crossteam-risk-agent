@@ -1,10 +1,10 @@
 """Validator package for dep_agent."""
 
 from dep_agent.validator.llm_validator import (
-    LlmValidator,
-    LlmValidationResult,
-    DependencyMapEntry,
     LLM_RESPONSE_SCHEMA,
+    DependencyMapEntry,
+    LlmValidationResult,
+    LlmValidator,
 )
 
 __all__ = [

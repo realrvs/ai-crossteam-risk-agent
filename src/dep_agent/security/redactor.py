@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class SecretRedactor:
-    """Regex-based secret redactor.
+    r"""Regex-based secret redactor.
 
     Masks:
     - GitHub tokens: ghp_[A-Za-z0-9_]{36,}

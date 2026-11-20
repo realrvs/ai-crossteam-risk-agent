@@ -1,15 +1,13 @@
 """Tests for graph models."""
 
-from dep_agent.graph.models import (
-    ArtifactNode,
-    ArtifactEdge,
-    SilenceCandidate,
-    DependencyMap,
-    Base,
-    create_graph_store,
-)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+
+from dep_agent.graph.models import (
+    ArtifactEdge,
+    ArtifactNode,
+    Base,
+)
 
 
 def test_create_in_memory_graph_store() -> None:

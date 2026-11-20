@@ -1,7 +1,8 @@
 """Tests for GitClient."""
 
-from dep_agent.ingestion.git_client import GitClient, GitClientConfig, CommitInfo
 from datetime import datetime
+
+from dep_agent.ingestion.git_client import CommitInfo, GitClient, GitClientConfig
 
 
 def test_git_client_config_defaults() -> None:

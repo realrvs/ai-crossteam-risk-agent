@@ -252,10 +252,7 @@ class PreFilter:
 
     def is_contract_path(self, filepath: str) -> bool:
         """Check if a file path is a known contract artifact."""
-        for pattern, _ in self._compiled_contract:
-            if pattern.search(filepath):
-                return True
-        return False
+        return any(pattern.search(filepath) for pattern, _ in self._compiled_contract)
 
     def get_artifact_type(self, filepath: str) -> str | None:
         """Get the artifact type for a file path, or None."""

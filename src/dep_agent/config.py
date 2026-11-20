@@ -11,7 +11,6 @@ from typing import Any
 
 import yaml
 
-
 DEFAULT_CONFIG_DIR = "config"
 DEFAULT_CONFIG_FILE = "default.yaml"
 
@@ -27,7 +26,7 @@ class Config:
     def _load(self) -> None:
         config_file = self._config_dir / DEFAULT_CONFIG_FILE
         if config_file.exists():
-            with open(config_file, "r", encoding="utf-8") as fh:
+            with open(config_file, encoding="utf-8") as fh:
                 self._data = yaml.safe_load(fh) or {}
         else:
             self._data = {}

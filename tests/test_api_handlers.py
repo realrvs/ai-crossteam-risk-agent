@@ -2,17 +2,16 @@
 
 import json
 from io import BytesIO
-from unittest.mock import MagicMock
 
 from dep_agent.api.handlers import (
     create_app,
-    get_dependencies_handler,
     get_blockers_handler,
+    get_dependencies_handler,
     run_analysis_handler,
 )
 from dep_agent.config import Config
-from dep_agent.graph.artifact_graph import ArtifactGraph
 from dep_agent.detector.silence_detector import SilenceDetector
+from dep_agent.graph.artifact_graph import ArtifactGraph
 
 
 def create_mock_environ(
@@ -232,7 +231,7 @@ def test_wsgi_app_404() -> None:
     def mock_start_response(status, headers, *args):
         responses.append((status, headers))
 
-    result = app(environ, mock_start_response)
+    app(environ, mock_start_response)
     assert len(responses) == 1
     assert "404" in responses[0][0]
 
@@ -251,7 +250,7 @@ def test_wsgi_app_adds_trace_id_header() -> None:
     def mock_start_response(status, headers, *args):
         responses.append((status, headers))
 
-    result = app(environ, mock_start_response)
+    app(environ, mock_start_response)
     assert len(responses) == 1
     headers = dict(responses[0][1])
     assert headers.get("X-Trace-Id") == "1d68870a5ead429cad38392d966130e7"

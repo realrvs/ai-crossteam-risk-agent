@@ -14,7 +14,6 @@ from __future__ import annotations
 import json
 import logging
 import time
-import uuid
 from typing import Any
 
 from dep_agent.config import Config
@@ -61,7 +60,6 @@ class RequestIdMiddleware:
         start_time = time.time()
         response_body: list[bytes] = []
         captured_status = "200 OK"
-        captured_headers: list[tuple[str, str]] = []
 
         def custom_start_response(
             status_code: str,
@@ -70,7 +68,7 @@ class RequestIdMiddleware:
         ) -> None:
             nonlocal captured_status
             captured_status = status_code
-            captured_headers = list(response_headers)
+            list(response_headers)
             # Add trace_id and request_id to response headers
             response_headers.append(("X-Trace-Id", trace_id))
             response_headers.append(("X-Request-Id", request_id))
@@ -225,7 +223,7 @@ def run_analysis_handler(
 
         repositories = request_data.get("repositories", [])
         lookback_days = request_data.get("lookback_days", 14)
-        silence_window_days = request_data.get("silence_window_days", 7)
+        request_data.get("silence_window_days", 7)
 
         if not repositories:
             error_body = json.dumps({
@@ -325,7 +323,7 @@ def create_app(
             ])
             return body
 
-        except Exception as exc:
+        except Exception:
             logger.exception("Unhandled error")
             error_body = json.dumps({
                 "error": "Internal server error",

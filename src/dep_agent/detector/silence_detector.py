@@ -10,10 +10,8 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from typing import Any
-
-from sqlalchemy.orm import Session
 
 from dep_agent.config import Config
 from dep_agent.graph.artifact_graph import ArtifactGraph
@@ -44,7 +42,7 @@ class BlockerCandidate:
     silence_days: int
     silence_window_days: int
     risk_score: float
-    detected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    detected_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     trace_id: str = ""
 
 
@@ -185,9 +183,8 @@ class SilenceDetector:
 
         # Cross-team penalty
         # (would need actual team data from dep object)
-        if hasattr(dep, "source_team") and hasattr(dep, "target_team"):
-            if dep.source_team != dep.target_team:
-                score += 1.0
+        if hasattr(dep, "source_team") and hasattr(dep, "target_team") and dep.source_team != dep.target_team:
+            score += 1.0
 
         return score
 

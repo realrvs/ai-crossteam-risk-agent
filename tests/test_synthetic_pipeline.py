@@ -11,16 +11,15 @@ from __future__ import annotations
 
 import json
 from io import BytesIO
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from dep_agent.config import Config
-from dep_agent.graph.artifact_graph import ArtifactGraph
-from dep_agent.detector.silence_detector import SilenceDetector
-from dep_agent.validator.llm_validator import (
-    LlmValidator,
-    DependencyMapEntry,
-)
 from dep_agent.api.handlers import create_app
+from dep_agent.detector.silence_detector import SilenceDetector
+from dep_agent.graph.artifact_graph import ArtifactGraph
+from dep_agent.validator.llm_validator import (
+    DependencyMapEntry,
+    LlmValidator,
+)
 
 
 def create_synthetic_graph() -> ArtifactGraph:

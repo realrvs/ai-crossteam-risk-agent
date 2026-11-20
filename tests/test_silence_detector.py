@@ -1,14 +1,12 @@
 """Tests for SilenceDetector (TC-004)."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-from dep_agent.config import Config
 from dep_agent.detector.silence_detector import (
-    SilenceDetector,
-    BlockerCandidate,
     SILENCE_WINDOWS,
+    BlockerCandidate,
+    SilenceDetector,
 )
-from dep_agent.graph.artifact_graph import ArtifactGraph
 
 
 def test_silence_windows_config() -> None:

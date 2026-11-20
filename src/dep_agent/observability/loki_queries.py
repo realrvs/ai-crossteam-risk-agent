@@ -11,7 +11,6 @@ Covers NFR-OBS-001.
 
 from __future__ import annotations
 
-
 # Loki log query templates
 LOG_QUERIES: dict[str, str] = {
     "all_dep_agent": '{app="dep-agent"}',

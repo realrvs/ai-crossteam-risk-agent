@@ -16,16 +16,14 @@ from typing import Any
 
 import yaml
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, aliased, sessionmaker
 
 from dep_agent.config import Config
 from dep_agent.graph.models import (
     ArtifactEdge,
     ArtifactNode,
     Base,
-    create_graph_store,
 )
-from sqlalchemy.orm import aliased, joinedload
 
 logger = logging.getLogger(__name__)
 
@@ -221,7 +219,7 @@ class TeamMapper:
         # Try YAML registry
         registry_path = Path("config") / "team-mapping.yaml"
         if registry_path.exists():
-            with open(registry_path, "r", encoding="utf-8") as fh:
+            with open(registry_path, encoding="utf-8") as fh:
                 registry = yaml.safe_load(fh) or {}
             team = registry.get(repo, {}).get("team", "unknown")
             if team:
@@ -259,7 +257,7 @@ class TeamMapper:
         if repo in self._codeowners_cache:
             return self._codeowners_cache[repo]
 
-        with open(path, "r", encoding="utf-8") as fh:
+        with open(path, encoding="utf-8") as fh:
             content = fh.read()
 
         patterns: dict[str, str] = {}

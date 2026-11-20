@@ -11,7 +11,6 @@ Covers NFR-001, NFR-OBS-001.
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 ALERT_RULES_FILE = "config/prometheus-alert-rules.yml"

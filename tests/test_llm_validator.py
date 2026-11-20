@@ -1,13 +1,11 @@
 """Tests for LlmValidator (TC-005, TC-SEC-001, TC-SEC-004)."""
 
-from unittest.mock import MagicMock, patch
 
-from dep_agent.config import Config
 from dep_agent.validator.llm_validator import (
-    LlmValidator,
-    LlmValidationResult,
-    DependencyMapEntry,
     LLM_RESPONSE_SCHEMA,
+    DependencyMapEntry,
+    LlmValidationResult,
+    LlmValidator,
 )
 
 

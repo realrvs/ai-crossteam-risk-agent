@@ -14,8 +14,9 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 from opentelemetry import metrics, trace
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
@@ -27,7 +28,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.sdk.trace.sampling import ALWAYS_ON
 from opentelemetry.semconv.attributes.service_attributes import SERVICE_NAME
-from opentelemetry.trace import Span, Status, StatusCode, Tracer, set_span_in_context
+from opentelemetry.trace import Span, Tracer
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 logger = logging.getLogger(__name__)

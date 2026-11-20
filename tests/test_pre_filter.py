@@ -1,7 +1,6 @@
 """Tests for PreFilter (TC-002)."""
 
-from dep_agent.config import Config
-from dep_agent.filtering.pre_filter import PreFilter, FilterBatchResult
+from dep_agent.filtering.pre_filter import PreFilter
 
 
 def test_prefilter_init() -> None:
