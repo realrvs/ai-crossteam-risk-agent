@@ -1,5 +1,6 @@
 """Artifact graph store package."""
 
+from dep_agent.graph.artifact_graph import ArtifactGraph, TeamMapper
 from dep_agent.graph.models import (
     ArtifactEdge,
     ArtifactNode,
@@ -16,4 +17,6 @@ __all__ = [
     "DependencyMap",
     "Base",
     "create_graph_store",
+    "ArtifactGraph",
+    "TeamMapper",
 ]
