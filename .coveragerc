@@ -1,0 +1,18 @@
+[run]
+source = src/dep_agent
+omit =
+    tests/*
+    */__init__.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING:
+    def __repr__
+    raise NotImplementedError
+
+show_missing = true
+precision = 2
+
+[html]
+directory = htmlcov
